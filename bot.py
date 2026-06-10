@@ -1,16 +1,18 @@
 import os
 import time
+import threading
 import telebot
 import random
 import pandas as pd
 from datetime import datetime
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import yfinance as yf
 
 from ta.momentum import RSIIndicator
 from ta.trend import EMAIndicator, MACD
 
 # =========================
-# 🔐 ENV TOKEN (RENDER SAFE)
+# 🔐 ENV TOKEN
 # =========================
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -24,6 +26,23 @@ bot = telebot.TeleBot(TOKEN)
 # =========================
 bot.remove_webhook()
 time.sleep(1)
+
+# =========================
+# 🌐 KEEP ALIVE WEB SERVER
+# =========================
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"AbdeysenBot is running!")
+    def log_message(self, *args):
+        pass
+
+def run_server():
+    port = int(os.environ.get("PORT", 10000))
+    HTTPServer(("0.0.0.0", port), Handler).serve_forever()
+
+threading.Thread(target=run_server, daemon=True).start()
 
 # =========================
 # 📡 YOUR CHANNEL
