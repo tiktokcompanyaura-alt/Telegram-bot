@@ -1,6 +1,8 @@
 import os
+import time
 import telebot
 import random
+import pandas as pd
 from datetime import datetime
 import yfinance as yf
 
@@ -16,6 +18,12 @@ if not TOKEN:
     raise Exception("BOT_TOKEN is not set in environment variables")
 
 bot = telebot.TeleBot(TOKEN)
+
+# =========================
+# 🔄 CLEAR WEBHOOK & RESET
+# =========================
+bot.remove_webhook()
+time.sleep(1)
 
 # =========================
 # 📡 YOUR CHANNEL
@@ -44,7 +52,6 @@ def get_data(symbol):
         if df is None or df.empty:
             return None
         df = df.dropna()
-        # Flatten MultiIndex columns if present
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.get_level_values(0)
         return df
