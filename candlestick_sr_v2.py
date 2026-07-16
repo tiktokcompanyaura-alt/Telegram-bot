@@ -6,7 +6,7 @@ pruned to the 20 patterns proven individually profitable.
 """
 
 from indicators import calculate_ema, calculate_atr, find_swing_points
-from strategies.pattern_library import detect_pattern
+from pattern_library import detect_pattern
 
 KEPT_PATTERNS = {
     "Three Black Crows", "Bearish Harami", "Mat Hold", "Morning Star",
