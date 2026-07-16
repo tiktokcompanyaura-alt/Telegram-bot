@@ -21,7 +21,7 @@ skipped (matches its "neutral" rating from the candlestick detector).
 """
 
 from indicators import calculate_ema, calculate_atr, find_swing_points
-from strategies.confluence_strategy import detect_candlestick_pattern
+from confluence_strategy import detect_candlestick_pattern
 
 
 class CandlestickStrategy:
