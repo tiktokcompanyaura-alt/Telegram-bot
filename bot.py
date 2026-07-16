@@ -14,12 +14,14 @@ a live feed later) - same honest limitations as before.
 
 import telebot
 import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from datetime import datetime
 
 from data_feed import HistoricalCSVFeed
-from strategies.candlestick_sr_v2 import CandlestickSRv2Strategy
-from strategies.candlestick_strategy import CandlestickStrategy
-from strategies.rsi_oversold import RSIOversoldStrategy
+from candlestick_sr_v2 import CandlestickSRv2Strategy
+from candlestick_strategy import CandlestickStrategy
+from rsi_oversold import RSIOversoldStrategy
 
 TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(TOKEN)
@@ -142,4 +144,24 @@ def help_cmd(message):
 
 
 print("Bot Started...")
+
+
+class _KeepAliveHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"AbdeysenBot is running")
+
+    def log_message(self, *args):
+        pass  # silence default request logging
+
+
+def _run_keep_alive_server():
+    port = int(os.environ.get("PORT", 10000))  # Render sets PORT automatically
+    server = HTTPServer(("0.0.0.0", port), _KeepAliveHandler)
+    server.serve_forever()
+
+
+threading.Thread(target=_run_keep_alive_server, daemon=True).start()
+
 bot.infinity_polling()
